@@ -1,29 +1,56 @@
-import random
-from lib.dronePos import DronePos
-from lib.destinationPos import DestinationPos
+import numpy as np
+import numpy.typing as npt
 
 
 class Drone:
-    def _rand(self, a: int):
-        return random.uniform(0, a)
+    _startTime = 0.0
 
-    def __init__(self, a: int, b: int):
+    def __init__(self, a: int, b: int, v: int):
         self._A = a
         self._B = b
-        self._s = DestinationPos(self._rand(a), self._rand(b))
-        self._d = DestinationPos(self._rand(a), self._rand(b))
-        self._drone = DronePos(self.getDPos()[0], self.getDPos()[1])
+        self._s = np.random.rand(2) * [a, b]
+        self._d = np.random.rand(2) * [a, b]
+        self._drone = self._s
+        self._driveVelocity = v
 
-    def getDronePos(self):
-        return self._drone.getDronePos()
+    @property
+    def drone(self):
+        return self._drone
 
-    def getSPos(self):
-        return self._s.getDestinationPos()
+    @drone.setter
+    def drone(self, value: npt.ArrayLike):
+        self._drone = np.array(value)
 
-    def getDPos(self):
-        return self._d.getDestinationPos()
+    @property
+    def s(self):
+        return self._s
+
+    @property
+    def d(self):
+        return self._d
+
+    @property
+    def driveDistance(self):
+        return np.linalg.norm(self._s - self._d)
+
+    @property
+    def driveTime(self):
+        return self.driveDistance / self._driveVelocity
+
+    @property
+    def sdAngle(self):
+        return np.arctan2(self._d[1] - self._s[1], self._d[0] - self._s[0])
+
+    def _dronevArr(self):
+        return self._driveVelocity * np.array(
+            [np.cos(self.sdAngle), np.sin(self.sdAngle)]
+        )
+
+    def droneMove(self, t: float):
+        sectionTime = t - self._startTime
+        self._drone = self._s + self._dronevArr() * sectionTime
 
     def changeDestination(self):
         self._s = self._d
-        self._d = DestinationPos(self._rand(self._A), self._rand(self._B))
-        self._drone = DronePos(self.getSPos()[0], self.getSPos()[1])
+        self._drone = self._s
+        self._d = np.random.rand(2) * [self._A, self._B]
