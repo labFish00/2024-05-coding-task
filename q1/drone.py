@@ -42,11 +42,21 @@ class Drone:
             [np.cos(self.sdAngle), np.sin(self.sdAngle)]
         )
 
-    def droneMove(self, t: float):
+    def _droneMove(self, t: float):
         sectionTime = t - self._startTime
         self._drone = self._s + self._dronevArr() * sectionTime
 
-    def changeDestination(self):
+    def _changeDestination(self):
+        self._startTime = self._startTime + self.driveTime
         self._s = self._d
-        self._drone = self._s
+        self._drone = self._d
         self._d = np.random.rand(2) * [self._A, self._B]
+
+    def advanceTime(self, t: float):
+        if t < self._startTime:
+            raise ValueError("Time cannot go backwards")
+
+        while t - self._startTime > self.driveTime:
+            self._changeDestination()
+
+        self._droneMove(t)
