@@ -17,10 +17,6 @@ class Drone:
     def drone(self):
         return self._drone
 
-    @drone.setter
-    def drone(self, value: npt.ArrayLike):
-        self._drone = np.array(value)
-
     @property
     def s(self):
         return self._s
