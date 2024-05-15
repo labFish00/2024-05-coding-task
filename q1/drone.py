@@ -11,50 +11,23 @@ class Drone:
         self._B = b
         self._s = np.random.rand(2) * [a, b]
         self._d = np.random.rand(2) * [a, b]
-        self._drone = self._s
+        self.drone = self._s
         self._driveVelocity = v
-
-    @property
-    def drone(self):
-        return self._drone
-
-    @property
-    def s(self):
-        return self._s
-
-    @property
-    def d(self):
-        return self._d
 
     @property
     def change(self):
         return self._change
 
-    @property
-    def driveDistance(self):
-        return np.linalg.norm(self._s - self._d)
-
-    @property
-    def driveTime(self):
-        return self.driveDistance / self._driveVelocity
-
-    @property
-    def sdAngle(self):
-        return np.arctan2(self._d[1] - self._s[1], self._d[0] - self._s[0])
-
-    def _dronevArr(self):
-        return self._driveVelocity * np.array(
-            [np.cos(self.sdAngle), np.sin(self.sdAngle)]
-        )
-
     def _droneMove(self, t: float):
+        sdAngle = np.arctan2(self._d[1] - self._s[1], self._d[0] - self._s[0])
+        dronevArr = self._driveVelocity * np.array([np.cos(sdAngle), np.sin(sdAngle)])
         sectionTime = t - self._startTime
-        self._drone = self._s + self._dronevArr() * sectionTime
+        self.drone = self._s + dronevArr * sectionTime
 
     def _changeDestination(self):
-        self._startTime = self._startTime + self.driveTime
+        self._startTime += np.linalg.norm(self._s - self._d) / self._driveVelocity
         self._s = self._d
-        self._drone = self._d
+        self.drone = self._d
         self._d = np.random.rand(2) * [self._A, self._B]
         self._change += 1
 
@@ -62,7 +35,9 @@ class Drone:
         if t < self._startTime:
             raise ValueError("Time cannot go backwards")
 
-        while t - self._startTime > self.driveTime:
+        while t - self._startTime > (
+            np.linalg.norm(self._s - self._d) / self._driveVelocity
+        ):
             self._changeDestination()
 
         self._droneMove(t)
