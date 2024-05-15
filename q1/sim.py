@@ -10,6 +10,7 @@ class Sim:
     def __init__(self, a, b, v, rng):
         self._n1 = Drone(a, b, v)
         self._n2 = Drone(a, b, v)
+        self._V = v
         self._rang = rng
 
     def check_distace(self, distance):
@@ -52,4 +53,5 @@ class Sim:
         print(self._topCount / self._buttomCount)
         print(self._topCount)
         print(self._buttomCount)
-        return self._topCount / self._buttomCount
+        el = T * self._V * 2 / (self._n1.change + self._n2.change)
+        return [self._topCount / self._buttomCount, el]

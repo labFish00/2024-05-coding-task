@@ -4,6 +4,7 @@ import numpy.typing as npt
 
 class Drone:
     _startTime = 0.0
+    _change = 1
 
     def __init__(self, a: int, b: int, v: int):
         self._A = a
@@ -24,6 +25,10 @@ class Drone:
     @property
     def d(self):
         return self._d
+
+    @property
+    def change(self):
+        return self._change
 
     @property
     def driveDistance(self):
@@ -51,6 +56,7 @@ class Drone:
         self._s = self._d
         self._drone = self._d
         self._d = np.random.rand(2) * [self._A, self._B]
+        self._change += 1
 
     def advanceTime(self, t: float):
         if t < self._startTime:
