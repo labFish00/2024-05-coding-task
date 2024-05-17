@@ -37,6 +37,7 @@ python-dateutil==2.9.0.post0
 pyzmq==26.0.3
 referencing==0.35.1
 rpds-py==0.18.1
+scipy==1.13.0
 simpy==4.1.1
 six==1.16.0
 stack-data==0.6.3
